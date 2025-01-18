@@ -4,10 +4,7 @@
     systems.url = "github:nix-systems/default";
     devenv.url = "github:cachix/devenv";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   nixConfig = {
@@ -21,6 +18,7 @@
       nixpkgs,
       devenv,
       systems,
+      nixpkgs-unstable,
       ...
     }@inputs:
     let
@@ -35,37 +33,24 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
         in
         {
           default = devenv.lib.mkShell {
             inherit inputs pkgs;
             modules = [
               {
-                # https://devenv.sh/reference/options/
-                packages = [ ];
+                packages = with pkgs; [
+                ];
 
                 # https://devenv.sh/reference/options/
-                languages.rust = {
+                languages.haskell = {
                   enable = true;
-                  channel = "stable";
-                  components = [
-                    "rustc"
-                    "cargo"
-                    "clippy"
-                    "rustfmt"
-                    "rust-analyzer"
-                  ];
-                  # targets = ["wasm32-wasi"]
-                  # targets = ["wasm32-unknown-unknown"]
-                  # targets = ["thumbv7m-none-eabi"]
-                  # components = [ "llvm-tools-preview" ]
                 };
 
                 # https://devenv.sh/pre-commit-hooks/
                 # pre-commit.hooks = {
-                #   cargo-check.enable = true;
-                #   rustfmt.enable = true;
-                #   clippy.enable = true;
+                #   stylish-haskell.enable = true; # linting
                 # };
               }
             ];
