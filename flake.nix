@@ -41,16 +41,29 @@
             modules = [
               {
                 packages = with pkgs; [
+                  pyright # we combine 2 lsp
                 ];
 
                 # https://devenv.sh/reference/options/
-                languages.haskell = {
+                languages.python = {
                   enable = true;
+                  uv = {
+                    enable = true;
+                    package = pkgs-unstable.uv;
+                    sync.enable = true;
+                  };
+                  # poetry = {
+                  #   enable = true;
+                  #   install = {
+                  #     enable = true;
+                  #   };
+                  #   activate.enable = true;
+                  # };
                 };
 
                 # https://devenv.sh/pre-commit-hooks/
                 # pre-commit.hooks = {
-                #   stylish-haskell.enable = true; # linting
+                #   ruff.enable = true; # linting
                 # };
               }
             ];
